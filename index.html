@@ -1,107 +1,12 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PRAGATI SETU - Detailed 10-Case MVP</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#2D5BFF,#C7C5E5 50%,#161821);min-height:100vh;padding:12px;color:#fff}
-.top{max-width:1200px;margin:0 auto}.steps{display:flex;gap:6px;margin:8px 0;flex-wrap:wrap}.step{flex:1;min-width:110px;background:#13151C;border:1px solid #2A2E3B;border-radius:8px;padding:6px;font-size:11px;text-align:center;color:#8A90A3}.step.on{background:#2563EB;color:#fff;border-color:#2563EB}
-.app{background:#101218;border:1px solid #2A2E3B;border-radius:16px;display:flex;min-height:84vh;max-width:1200px;margin:0 auto;overflow:hidden}
-.side{background:#13151C;width:205px;padding:12px;display:flex;flex-direction:column;gap:6px;flex-shrink:0}
-.side button{background:transparent;border:0;color:#8A90A3;text-align:left;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer}
-.side button.on,.side button:hover{background:#1C202C;color:#fff}
-.main{flex:1;padding:14px;overflow:auto;min-width:0}
-.card{background:#1C202C;border:1px solid #2A2E3B;border-radius:12px;padding:12px;margin-bottom:10px;font-size:12px}
-.mut{color:#8A90A3}.row{display:flex;gap:10px;flex-wrap:wrap}.col{flex:1;min-width:160px}.big{font-size:20px;font-weight:800}
-.pill{display:inline-block;font-size:11px;padding:2px 10px;border-radius:20px;color:#fff;margin-left:6px}
-.red{background:#DC2626}.yel{background:#B45309}.grn{background:#16A34A}.blu{background:#2563EB}.gry{background:#374151}.pur{background:#7C3AED}
-.btn{padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;border:0;cursor:pointer;color:#fff;background:#374151;margin:2px 6px 2px 0}
-.btn.b{background:#2563EB}.btn.g{background:#16A34A}.btn.r{background:#DC2626}
-input,select,textarea{background:#101218;border:1px solid #2A2E3B;color:#fff;border-radius:8px;font-size:12px;padding:7px;width:100%;margin:4px 0}
-.view{display:none}.view.on{display:block}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #2A2E3B;padding:6px;text-align:left}
-.bar{height:8px;background:#101218;border-radius:6px;overflow:hidden;margin:4px 0}.bar i{display:block;height:100%}
-.tl{border-left:2px solid #2A2E3B;margin:8px 0 0 6px;padding-left:12px}.tl div{margin-bottom:8px}
-.doc{display:inline-block;background:#101218;border:1px dashed #4B5563;border-radius:8px;padding:8px;margin:4px;font-size:11px}
-.skel{background:#101218;border:1px solid #2A2E3B;border-radius:8px;height:90px;display:flex;align-items:center;justify-content:center;color:#4B5563;font-size:11px;margin:6px 0}
-#modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:14px;z-index:9}#modal.on{display:flex}#mbox{max-width:600px;width:100%;max-height:92vh;overflow:auto}
-.mono{font-family:Consolas,monospace;font-size:11px}
-</style></head><body>
-<div class="top"><h1 style="text-align:center">PRAGATI SETU <span class="mut" style="font-size:13px;font-weight:400">— 10-Case Detailed Demo + Mock Backend</span></h1>
-<div class="mut" style="text-align:center;font-size:12px">Demo backend: in-browser API with latency + localStorage • All data SYNTHETIC</div>
-<div class="steps" id="flow"><div class="step on">1 DATA</div><div class="step">2 DETECTION</div><div class="step">3 DIAGNOSIS</div><div class="step">4 RECOMMEND.</div><div class="step">5 DECISION</div><div class="step">6 ACTION</div><div class="step">7 VERIFY</div></div></div>
-<div class="app"><div class="side">
-<div class="mut" style="font-size:11px">ROLE (mock auth)</div>
-<select id="role" onchange="API.setRole(this.value)"><option>Secretary</option><option>Review Officer</option><option>Project Officer</option></select>
-<button id="b-cmd" class="on" onclick="UI.show('cmd')">Command</button>
-<button id="b-proj" onclick="UI.show('proj')">Projects (10)</button>
-<button id="b-dep" onclick="UI.show('dep')">Dependencies</button>
-<button id="b-tick" onclick="UI.show('tick')">Interventions <span id="tickCount" class="pill red"></span></button>
-<button id="b-brief" onclick="UI.show('brief')">Brief</button>
-<button id="b-audit" onclick="UI.show('audit')">Audit</button>
-<button onclick="API.reset()">Reset demo</button>
-<div class="mut" id="userBox" style="margin-top:auto;font-size:11px"></div>
-</div><div class="main">
-<div id="v-cmd" class="view on"><div id="stats" class="row"></div><h3 style="margin:8px 0">Triage — sorted by cost-of-delay</h3><div id="riskList"></div></div>
-<div id="v-proj" class="view"><div class="row"><div class="col"><input id="q" placeholder="Search id / name / ministry / blocker..." oninput="UI.projects()"></div><div class="col"><select id="f" onchange="UI.projects()"><option value="">All filters</option><option>CRITICAL</option><option>AT RISK</option><option>ON TRACK</option></select></div></div><div id="projList" class="row" style="margin-top:8px"></div><div id="projDetail"></div></div>
-<div id="v-dep" class="view"><h3>Dependency skeleton</h3><div class="mut">Click any node → diagnosis. Red = critical path.</div><svg id="graph" width="100%" height="420" style="background:#1C202C;border:1px solid #2A2E3B;border-radius:12px;margin-top:8px"></svg><div id="depInfo" class="mut"></div></div>
-<div id="v-tick" class="view"><h3>Intervention queue + SLA</h3><div id="tickList" style="margin-top:8px"></div></div>
-<div id="v-brief" class="view"><h3>Executive brief</h3><div style="margin:8px 0"><button class="btn b" onclick="UI.brief()">Generate</button><button class="btn" onclick="window.print()">Print / PDF</button></div><div id="briefOut"></div></div>
-<div id="v-audit" class="view"><h3>Audit trail</h3><div id="auditList" style="margin-top:8px"></div></div>
-</div></div><div id="modal"><div id="mbox" class="card"></div></div>
-<script>
-// ===== DEMO BACKEND (mock API + latency) =====
-var SEED=[
-{id:"P-101",name:"Bareilly-Moradabad 4-lane (105km)",min:"MoRTH",state:"UP",cost:842,dl:"2026-12-31",phys:62,fin:41,over:29,owner:"EE Sharma",blocker:"Forest clearance",dep:["P-118"],upd:"work in progress",photo:0,ms:[["Land 90%",100],["Girder M7",40],["Paving 40km",55]],burn:[10,12,11,4,3],docs:["DPR.pdf","M7-claim.xlsx","Site-photo-missing"],tl:[["02-Sep","62% claimed, no photo"],["18-Aug","62% same text"],["28-Jul","60% JCB photo"]]},
-{id:"P-118",name:"Forest Clearance Stage-II",min:"MoEF",state:"UP",cost:120,dl:"2026-09-30",phys:30,fin:28,over:45,owner:"RO Env",blocker:"File pending",dep:[],upd:"file pending at RO",photo:0,ms:[["Stage-I",100],["Stage-II NOC",10],["Handover",0]],burn:[2,2,1,1,0],docs:["FC-form-A.pdf"],tl:[["01-Sep","Reminder sent"],["10-Aug","Query raised"]]},
-{id:"P-203",name:"Lucknow Metro Ext 2B (11km)",min:"MoHUA",state:"UP",cost:1240,dl:"2027-03-31",phys:78,fin:74,over:5,owner:"PM Mishra",blocker:"None",dep:[],upd:"girder casting done + photo",photo:1,ms:[["Piers",95],["Girders",80],["Trial run",20]],burn:[20,22,21,22,20],docs:["Pier-log.pdf","Girder-photo-12.jpg"],tl:[["03-Sep","80 girders done"],["20-Aug","Trial prep"]]},
-{id:"P-310",name:"Ganga STP Kanpur 120MLD",min:"Jal Shakti",state:"UP",cost:410,dl:"2026-11-30",phys:55,fin:52,over:12,owner:"AE Gupta",blocker:"Power link",dep:["P-203"],upd:"civil 55% verified",photo:1,ms:[["Civil",60],["Electro-mech",30],["Grid link",10]],burn:[8,8,7,6,6],docs:["Civil-MB.pdf","Grid-req.pdf"],tl:[["02-Sep","55% MB verified"],["15-Aug","Transformer awaited"]]},
-{id:"P-415",name:"Rural Fiber Gonda (800km)",min:"DoT",state:"UP",cost:210,dl:"2026-10-31",phys:88,fin:40,over:0,owner:"DE Verma",blocker:"Billing lag",dep:[],upd:"work in progress",photo:0,ms:[["Laying",90],["Splicing",85],["Billing",35]],burn:[5,6,6,5,2],docs:["OTDR-40.pdf"],tl:[["02-Sep","Laying 90%, bills 35%"],["12-Aug","Same text repeat"]]},
-{id:"P-512",name:"Rail doubling Sitapur-Burhwal",min:"Railways",state:"UP",cost:980,dl:"2027-06-30",phys:48,fin:46,over:18,owner:"Sr DEN",blocker:"Land 4ha",dep:[],upd:"embankment 48%",photo:1,ms:[["Earthwork",55],["Bridges 3/7",42],["Track linking",10]],burn:[12,12,10,9,8],docs:["Land-4ha-note.pdf","Bridge-4-photo.jpg"],tl:[["01-Sep","Bridge-4 piling"],["14-Aug","Land award pending"]]},
-{id:"P-623",name:"AIIMS Gorakhpur OPD block",min:"Health",state:"UP",cost:670,dl:"2026-12-31",phys:70,fin:68,over:8,owner:"EE CPWD",blocker:"Monsoon",dep:[],upd:"slab 6/8 + photo",photo:1,ms:[["Structure",75],["MEP",40],["Finishing",15]],burn:[11,11,10,8,9],docs:["Slab-6-cube.pdf"],tl:[["03-Sep","Slab-6 cast"],["19-Aug","Rain 6 days"]]},
-{id:"P-704",name:"PMGSY roads Bahraich Ph-III",min:"RD",state:"UP",cost:330,dl:"2026-09-30",phys:52,fin:50,over:22,owner:"EE RRDA",blocker:"Contractor slow",dep:[],upd:"work in progress",photo:0,ms:[["WBM",60],["BT 12/30km",40],["Drains",30]],burn:[7,7,5,4,3],docs:["BT-log.pdf"],tl:[["30-Aug","Same 52% 3rd time"],["05-Aug","Notice issued"]]},
-{id:"P-815",name:"Smart metering Lucknow 2L",min:"Power",state:"UP",cost:520,dl:"2027-01-31",phys:64,fin:60,over:9,owner:"SE LESA",blocker:"Supply",dep:["P-415"],upd:"1.2L installed",photo:1,ms:[["Supply 2L",70],["Install 1.2L",60],["MDM link",45]],burn:[9,9,9,8,8],docs:["Supply-inv.pdf","MDM-uptime.png"],tl:[["02-Sep","1.2L live"],["16-Aug","Chip delay"]]},
-{id:"P-920",name:"Amrit Sarovar + desilt 240",min:"RD/WR",state:"UP",cost:180,dl:"2026-10-15",phys:74,fin:72,over:3,owner:"BDO HQ",blocker:"None",dep:[],upd:"182/240 done + geo-tag",photo:1,ms:[["Ponds 182",76],["Desilt",70],["Geo-tag",90]],burn:[4,4,4,4,4],docs:["Geo-tag-182.zip"],tl:[["03-Sep","182 geo-tagged"],["20-Aug","182 verified"]]}];
-var API={db:null,
-load:function(){try{this.db=JSON.parse(localStorage.getItem("setu10"))||null}catch(e){this.db=null}if(!this.db||this.db.v!==3){this.db={v:3,role:"Secretary",tickets:[],audit:[],upd:{}};SEED.forEach(function(p){this.db.upd[p.id]=JSON.parse(JSON.stringify(p))},this);this.save()}},
-save:function(){localStorage.setItem("setu10",JSON.stringify(this.db))},
-reset:function(){localStorage.removeItem("setu10");this.load();UI.all();LOG("Demo reset — 10 cases reloaded")},
-setRole:function(r){this.db.role=r;this.save();document.getElementById("userBox").textContent=r+" • MoSPI (mock)";LOG("Role → "+r);UI.all()},
-get:function(id){return this.db.upd[id]},
-all:function(){var a=[],k;for(k in this.db.upd)a.push(this.db.upd[k]);return a}};
-function H(p){var h=100-p.over*1.2-Math.abs(p.phys-p.fin)*0.8-(p.photo?0:9);if(p.upd==="work in progress")h-=7;return Math.max(4,Math.round(h))}
-function ST(h){return h<45?["CRITICAL","red"]:h<70?["AT RISK","yel"]:["ON TRACK","grn"]}
-function CR(p){return Math.round(p.cost*0.002*p.over/7*10)/10}
-function LOG(a){var al=API.db.audit,prev=al.length?al[al.length-1].hash:"0",s=prev+a+Date.now(),h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;al.push({t:new Date().toLocaleTimeString(),by:API.db.role,act:a,hash:h.toString(16)});API.save();UI.audit()}
-// ===== UI =====
-var UI={cur:"cmd",
-show:function(v){UI.cur=v;["cmd","proj","dep","tick","brief","audit"].forEach(function(x){document.getElementById("v-"+x).className="view"+(x===v?" on":"");document.getElementById("b-"+x).className=x===v?"on":""});var fl=document.getElementById("flow").children,map={cmd:1,proj:0,dep:2,tick:5,brief:4,audit:6};for(var i=0;i<fl.length;i++)fl[i].className="step"+(i===(map[v]||0)?" on":"");if(v==="dep")UI.graph()},
-all:function(){UI.cmd();UI.projects();UI.ticks();UI.audit()},
-cmd:function(){var all=API.all(),crit=0,atr=0,tot=0,i;all.forEach(function(p){var h=H(p);if(h<45)crit++;else if(h<70)atr++;tot+=CR(p)});
-document.getElementById("stats").innerHTML='<div class="card col"><div class="mut">Projects</div><div class="big">'+all.length+'</div></div><div class="card col"><div class="mut">Critical</div><div class="big">'+crit+'</div></div><div class="card col"><div class="mut">At-risk</div><div class="big">'+atr+'</div></div><div class="card col"><div class="mut">Cost-at-risk Rs cr</div><div class="big">'+Math.round(tot*10)/10+'</div></div>';
-all.sort(function(a,b){return CR(b)-CR(a)});var s="";all.forEach(function(p){var h=H(p),st=ST(h);var flag=Math.abs(p.phys-p.fin)>15||p.upd==="work in progress"&&!p.photo?" • <span class='pill pur'>ANOMALY</span>":"";s+='<div class="card"><b>'+p.id+' — '+p.name+'</b><span class="pill '+st[1]+'">'+st[0]+' '+h+'</span>'+flag+'<div class="mut">'+p.min+' | '+p.state+' | Rs '+p.cost+'cr | Over '+p.over+'d | Phys '+p.phys+'% vs Fin '+p.fin+'% | Rs '+CR(p)+'cr/wk | Blocker: '+p.blocker+'</div><div style="margin-top:6px"><button class="btn b" onclick="UI.risk(\''+p.id+'\')">Open AI Card</button><button class="btn" onclick="UI.detail(\''+p.id+'\')">Detail path</button></div></div>'});document.getElementById("riskList").innerHTML=s;var o=API.db.tickets.filter(function(t){return t.st!=="Closed"}).length;document.getElementById("tickCount").textContent=o||""},
-projects:function(){var q=document.getElementById("q").value.toLowerCase(),f=document.getElementById("f").value,s="";API.all().forEach(function(p){if((p.id+p.name+p.min+p.blocker).toLowerCase().indexOf(q)<0)return;var h=H(p),st=ST(h);if(f&&st[0]!==f)return;s+='<div class="card col"><b>'+p.id+'</b> <span class="pill '+st[1]+'">'+st[0]+' '+h+'</span><div style="margin:4px 0">'+p.name+'</div><div class="mut">'+p.min+' | Rs '+p.cost+'cr | '+p.blocker+'</div><div style="margin-top:6px"><button class="btn" onclick="UI.detail(\''+p.id+'\')">Open detail path</button></div></div>'});document.getElementById("projList").innerHTML=s||'<div class="mut">No match</div>'},
-detail:function(id){UI.show("proj");var p=API.get(id),h=H(p),st=ST(h);var spark=p.burn.map(function(v,i){return (i*40+10)+","+(70-v*2)}).join(" ");
-var ms=p.ms.map(function(m){return '<div>'+m[0]+'<div class="bar"><i style="width:'+m[1]+'%;background:'+(m[1]<40?'#DC2626':m[1]<70?'#D97706':'#16A34A')+'"></i></div></div>'}).join("");
-var docs=p.docs.map(function(d){return '<span class="doc">📄 '+d+'</span>'}).join("");
-var tl=p.tl.map(function(t){return '<div><b>'+t[0]+'</b> — '+t[1]+'</div>'}).join("");
-document.getElementById("projDetail").innerHTML='<div class="card"><b>'+p.id+' — '+p.name+'</b><span class="pill '+st[1]+'">'+st[0]+' '+h+'</span><div class="mut">'+p.min+' | '+p.state+' | DL '+p.dl+' | Owner '+p.owner+' | Dep '+(p.dep.join(",")||"—")+'</div>'
-+'<div class="row" style="margin-top:8px"><div class="col"><div class="mut">Site / map skeleton</div><div class="skel">[ site-photo-placeholder ] '+(p.photo?"photo OK":"NO PHOTO → flag")+'</div><div class="skel">[ map-placeholder : '+p.state+' ]</div></div>'
-+'<div class="col"><div class="mut">Milestones</div>'+ms+'<div class="mut" style="margin-top:6px">Burn (Rs cr/mo) skeleton</div><svg width="100%" height="70" style="background:#101218;border-radius:8px"><polyline points="'+spark+'" fill="none" stroke="#2563EB" stroke-width="2"/></svg></div>'
-+'<div class="col"><div class="mut">Docs</div>'+docs+'<div class="mut" style="margin-top:6px">Update feed</div><div class="tl">'+tl+'</div></div></div>'
-+'<div class="row" style="margin-top:8px"><div class="col"><label class="mut">Phys %</label><input id="up" type="number" value="'+p.phys+'"></div><div class="col"><label class="mut">Fin %</label><input id="uf" type="number" value="'+p.fin+'"></div><div class="col"><label class="mut">Note</label><input id="ut" value="'+p.upd+'"></div></div>'
-+'<div style="margin-top:6px"><button class="btn g" onclick="UI.save(\''+p.id+'\',1)">Submit + Photo</button><button class="btn" onclick="UI.save(\''+p.id+'\',0)">Submit No Photo</button><button class="btn b" onclick="UI.risk(\''+p.id+'\')">AI Card → Ticket</button></div></div>';
-window.scrollTo(0,document.body.scrollHeight)},
-save:function(id,ph){var p=API.get(id);p.phys=+document.getElementById("up").value;p.fin=+document.getElementById("uf").value;p.upd=document.getElementById("ut").value;p.photo=ph?1:0;if(ph&&p.phys>60)p.over=Math.max(0,p.over-7);p.tl.unshift([new Date().toLocaleDateString(),p.phys+"% / "+p.fin+"% photo="+ph]);API.save();LOG("Update "+id+" "+p.phys+"/"+p.fin+" ph="+ph);UI.all();UI.detail(id);alert("Saved. Health "+H(p))},
-risk:function(id){var p=API.get(id),h=H(p),conf=p.photo?62:84;var ev="Overdue "+p.over+"d • Var "+Math.abs(p.phys-p.fin)+"%"+(Math.abs(p.phys-p.fin)>15?" <b>ANOMALY</b>":"")+" • Text '"+p.upd+"' • "+(p.photo?"photo OK":"NO photo")+" • Dep "+(p.dep.join(",")||"none")+" • Blocker: "+p.blocker;var rec=p.dep.length?("Escalate "+p.dep.join(",")+" owner, 14d SLA + parallel work"):("Notice to "+p.owner+", verification in 7d");
-document.getElementById("mbox").innerHTML='<span class="pill red">Health '+h+' | Conf '+conf+'%</span><h3 style="margin:6px 0">'+p.id+' — '+p.name+'</h3><div><b>CLAIM:</b> '+(p.over>18?"Stalled — intervention needed":"Watch — momentum falling")+'</div><div class="mut" style="margin:6px 0"><b>EVIDENCE:</b><br>'+ev+'<br><b>SOURCE:</b> MIS 02-Sep + '+p.docs[0]+' | <b>TIME:</b> '+new Date().toLocaleString()+'</div><div class="card" style="background:#101218"><b>RECOMMENDATION:</b> '+rec+'<br><span class="mut">Owner '+p.owner+' • SLA 14d</span></div><label class="mut">Owner</label><input id="own" value="'+p.owner+'"><label class="mut">Draft DO-letter (editable)</label><textarea rows="3">Dear Sir, '+p.id+' '+p.name+' delayed '+p.over+'d due to '+p.blocker+'. Request clearance/action in 14 days. Cost-of-delay Rs '+CR(p)+'cr/week. — MoSPI</textarea><div><button class="btn g" onclick="UI.approve(\''+p.id+'\')">Approve + Assign</button><button class="btn r" onclick="UI.reject(\''+p.id+'\')">Reject</button><button class="btn" onclick="UI.close()">Close</button></div>';
-document.getElementById("modal").className="on"},
-approve:function(id){var o=document.getElementById("own").value;API.db.tickets.push({id:"T-"+(101+API.db.tickets.length),proj:id,owner:o,act:"Intervene "+API.get(id).blocker,sla:14,st:"Open",t:new Date().toLocaleString()});API.save();LOG("Approved "+id+" → "+o);UI.close();UI.all();UI.show("tick")},
-reject:function(id){LOG("Rejected AI "+id+" — human review");UI.close();UI.all()},
-close:function(){document.getElementById("modal").className=""},
-graph:function(){var svg=document.getElementById("graph"),y=24;svg.innerHTML="";var all=API.all();all.forEach(function(p){p._y=y;var x=p.dep.length?20:430,h=H(p);svg.innerHTML+='<g onclick="UI.risk(\''+p.id+'\')" style="cursor:pointer"><rect x="'+x+'" y="'+y+'" width="230" height="50" rx="10" fill="#101218" stroke="'+(h<45?'#EF4444':h<70?'#D97706':'#16A34A')+'" stroke-width="'+(h<45?3:1.5)+'"/><text x="'+(x+10)+'" y="'+(y+20)+'" fill="#fff" font-size="11" font-weight="bold">'+p.id+' H:'+h+'</text><text x="'+(x+10)+'" y="'+(y+35)+'" fill="#8A90A3" font-size="10">'+p.name.substring(0,27)+'</text></g>';y+=70});
-all.forEach(function(a){a.dep.forEach(function(d){var t=API.get(d);if(!t)return;svg.innerHTML+='<path d="M 250 '+(t._y+25)+' C 330 '+(t._y+25)+',340 '+(a._y+25)+',430 '+(a._y+25)+'" stroke="#DC2626" stroke-width="1.5" fill="none" stroke-dasharray="5,3"/>'})});
-document.getElementById("depInfo").textContent="Dashed red = blocked: P-118→P-101, P-203→P-310, P-415→P-815. Fix source to unlock downstream."},
-ticks:function(){var s="";API.db.tickets.forEach(function(t){var pc=t.st==="Closed"?100:35;s+='<div class="card"><b>'+t.id+' | '+t.proj+' → '+t.owner+'</b><span class="pill '+(t.st==="Closed"?"grn":"yel")+'">'+t.st+' • SLA '+t.sla+'d</span><div class="mut">'+t.act+'<br>'+t.t+'</div><div class="bar"><i style="width:'+pc+'%;background:'+(t.st==="Closed"?"#16A34A":"#D97706")+'"></i></div>'+(t.st!=="Closed"?'<button class="btn g" onclick="UI.closeT(\''+t.id+'\')">Close with proof</button>':"")+'</div>'});document.getElementById("tickList").innerHTML=s||'<div class="mut">Empty. Command → AI Card → Approve.</div>';var o=API.db.tickets.filter(function(t){return t.st!=="Closed"}).length;document.getElementById("tickCount").textContent=o||""},
-closeT:function(id){API.db.tickets.forEach(function(t){if(t.id===id){t.st="Closed";var p=API.get(t.proj);if(p)p.over=Math.max(0,p.over-10)}});API.save();LOG("Closed "+id+" with NOC/photo");UI.all()},
-brief:function(){var all=API.all(),tot=0;all.forEach(function(p){tot+=CR(p)});var r="";all.forEach(function(p){r+="<tr><td>"+p.id+"</td><td>"+p.name+"</td><td>"+H(p)+"</td><td>"+p.over+"d</td><td>"+CR(p)+"</td></tr>"});
-document.getElementById("briefOut").innerHTML='<div class="card"><h3>MoSPI Flash Note — '+new Date().toDateString()+' (SYNTHETIC)</h3><div class="mut">10 cases • Cost-at-risk Rs '+Math.round(tot*10)/10+'cr • Priority P-101/P-118 corridor</div><table style="margin-top:8px"><tr><th>ID</th><th>Project</th><th>H</th><th>Over</th><th>Rs cr/wk</th></tr>'+r+'</table><div style="margin-top:6px">Open tickets '+API.db.tickets.filter(function(t){return t.st!=="Closed"}).length+' • Audit events '+API.db.audit.length+' • Rec: clear P-118 in 14d.</div></div>';LOG("Brief generated")},
-audit:function(){var s="";for(var i=API.db.audit.length-1;i>=0;i--){var a=API.db.audit[i];s+='<div class="card mono">'+a.t+' | '+a.by+' | '+a.act+' | #'+a.hash+'</div>'}document.getElementById("auditList").innerHTML=s||'<div class="mut">Empty</div>'}};
-API.load();document.getElementById("userBox").textContent=API.db.role+" • MoSPI (mock)";UI.all();LOG("Loaded detailed 10-case demo backend");
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PRAGATI SETU — Command Centre</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PRAGATI SETU — Command Centre (Off-White • RBAC)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,Arial,sans-serif;background:#F6F5F1;color:#1F2430;min-height:100vh}
+.app{display:flex;min-height:100vh}
+.side{background:#FFFFFF;border-right:1px solid #E5E2D9;width:224px;padding:14px 12px;display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+.brand{font-weight:800;letter-spacing:.5px;margin-bottom:2px;color:#1F2430}
+.brand small{display:block;font-weight:400;color:#8B8578;font-size:10px}
+.rolebadge{margin:8px 0 10px;padding:8px;border-radius:10px;background:#F3F1EA;border:1px solid #E5E2D9;font-size:12px}
+.rolebadge b{color:#1D4ED8}
+.side button{background:transparent;border:0;color:#6B7280;text-align:left;padding:9px 10px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;width:100%}
+.side button.on,.side button:hover{background:#F3F1EA;color:#1F2430}
+.side .foot{margin-top:auto;font-size:10px;color:#A8A294;line-height:1.5}
+.main{flex:1;padding:16px 20px;overflow:auto;min-width:0}
+h1{font-size:20px;margin-bottom:2px}
+h3{font-size:15px;margin:14px 0 8px}
+.mut{color:#6B7280}
+.card{background:#FFFFFF;border:1px solid #E5E2D9;border-radius:12px;padding:12px;margin-bottom:10px;font-size:12.5px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.col{flex:1;min-width:170px}
+.big{font-size:24px;font-weight:800}
+.pill{display:inline-block;font-size:10.5px;padding:2px 10px;border-radius:20px;color:#fff;margin-left:6px;vertical-align:middle}
+.red{background:#DC2626}.yel{background:#B45309}.grn{background:#16A34A}.blu{background:#2563EB}.gry{background:#9CA3AF}.pur{background:#7C3AED}.sky{background:#0284C7}
+.btn{padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;border:0;cursor:pointer;color:#fff;background:#6B7280;margin:2px 6px 2px 0}
+.btn.b{background:#2563EB}.btn.g{background:#16A34A}.btn.r{background:#DC2626}
+.btn.o{background:transparent;border:1px solid #D6D2C4;color:#4B5563}
+.btn.o:hover{border-color:#2563EB;color:#2563EB}
+input,select,textarea{background:#FFFFFF;border:1px solid #D6D2C4;color:#1F2430;border-radius:8px;font-size:12px;padding:8px;width:100%;margin:4px 0}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#2563EB}
+.view{display:none}.view.on{display:block}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{border:1px solid #E5E2D9;padding:6px;text-align:left}
+th{background:#F3F1EA}
+.bar{height:8px;background:#F3F1EA;border-radius:6px;overflow:hidden;margin:4px 0}
+.bar i{display:block;height:100%}
+.tl{border-left:2px solid #E5E2D9;margin:8px 0 0 6px;padding-left:12px}.tl div{margin-bottom:8px}
+.doc{display:inline-block;background:#F3F1EA;border:1px dashed #B9B3A4;border-radius:8px;padding:8px;margin:3px;font-size:11px}
+.skel{background:#FBFAF7;border:1px solid #E5E2D9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#A8A294;font-size:11px;margin:6px 0}
+#modal{position:fixed;inset:0;background:rgba(31,36,48,.45);display:none;align-items:center;justify-content:center;padding:14px;z-index:9}
+#modal.on{display:flex}
+#mbox{max-width:660px;width:100%;max-height:92vh;overflow:auto}
+.mono{font-family:Consolas,monospace;font-size:11px}
+.steps{display:flex;gap:6px;margin:6px 0;flex-wrap:wrap}
+.step{flex:1;min-width:104px;background:#FFFFFF;border:1px solid #E5E2D9;border-radius:8px;padding:6px;font-size:10.5px;text-align:center;color:#8B8578}
+.step.on{background:#2563EB;color:#fff;border-color:#2563EB}
+.step.done{border-color:#16A34A;color:#16A34A}
+/* login */
+#login{max-width:440px;margin:6vh auto;background:#FFFFFF;border:1px solid #E5E2D9;border-radius:16px;padding:22px;box-shadow:0 10px 30px rgba(31,36,48,.06)}
+#login h1{text-align:center}
+#login .sub{text-align:center;color:#6B7280;font-size:12px;margin-bottom:14px}
+.lbtn{display:block;width:100%;margin:8px 0;padding:12px;border-radius:10px;border:1px solid #E5E2D9;background:#F3F1EA;color:#1F2430;font-weight:700;cursor:pointer;text-align:left;font-size:13px}
+.lbtn:hover{border-color:#2563EB}
+.lbtn span{color:#6B7280;font-weight:400;font-size:11px;display:block}
+.loginbar{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.loginbar input{margin:0}
+.creds{width:100%;font-size:11px;margin-top:10px}
+.err{color:#DC2626;font-size:12px;margin:6px 0;display:none}
+/* notifications */
+.notif{display:flex;gap:10px;padding:9px;border-radius:10px;background:#FFFFFF;border:1px solid #E5E2D9;margin-bottom:6px;font-size:12px;align-items:center}
+.notif.unread{border-left:3px solid #2563EB}
+.notif .t{color:#8B8578;font-size:10.5px;margin-left:auto;white-space:nowrap}
+/* audit */
+.auditrow{display:flex;gap:10px;padding:7px 10px;border-radius:8px;background:#FFFFFF;border:1px solid #E5E2D9;margin-bottom:5px;font-size:11px;align-items:center;flex-wrap:wrap}
+.auditrow .h{color:#16A34A}
+@media print{
+ body{background:#fff}
+ .side,.steps,.btn,#login,.noprint{display:none!important}
+ .main{padding:0}
+ .card{border-color:#bbb;background:#fff;color:#111}
+ th{background:#eee}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="login">
+  <h1>PRAGATI SETU</h1>
+  <div class="sub" data-i18n="login_sub">Action-closure layer on PAIMANA • secure RBAC login • all data SYNTHETIC</div>
+  <div class="loginbar"><input id="q0" placeholder="Search 10 projects (id / name / ministry)…"><button class="btn b" onclick="UI.loginSearch()">🔍</button></div>
+  <div id="loginSearchOut"></div>
+  <div class="skel" style="height:100px">[ portfolio map skeleton — UP outline, pin = project, size = ₹cr, color = health ]</div>
+  <div class="skel" style="height:50px">[ anomaly badges: phys-fin gap • no-photo claim • repeated update text ]</div>
+
+  <h3 style="margin-top:12px" data-i18n="login_choose">Sign in (role-based access)</h3>
+  <label class="mut" data-i18n="login_user">Username</label>
+  <select id="liUser">
+    <option value="secy-mospi">secy-mospi — Secretary, MoSPI</option>
+    <option value="ro-triage">ro-triage — Review Officer</option>
+    <option value="ee-sharma">ee-sharma — Project Officer</option>
+    <option value="admin-demo">admin-demo — Admin</option>
+  </select>
+  <label class="mut" data-i18n="login_pw">Password</label>
+  <input id="liPw" type="password" placeholder="••••••" onkeydown="if(event.key==='Enter')UI.loginSubmit()">
+  <div id="liErr" class="err" data-i18n="login_err">Invalid username or password.</div>
+  <button class="lbtn" style="text-align:center" onclick="UI.loginSubmit()" data-i18n="login_btn">🔐 Sign in</button>
+  <table class="creds"><tr><th data-i18n="creds_user">Username</th><th data-i18n="creds_pw">Password</th><th data-i18n="creds_role">Role unlocked</th></tr>
+    <tr><td class="mono">secy-mospi</td><td class="mono">setu123</td><td data-i18n="r_sec">Secretary — Command & Brief</td></tr>
+    <tr><td class="mono">ro-triage</td><td class="mono">setu123</td><td data-i18n="r_ro">Review Officer — Triage & Verify</td></tr>
+    <tr><td class="mono">ee-sharma</td><td class="mono">setu123</td><td data-i18n="r_po">Project Officer — 5-min Update</td></tr>
+    <tr><td class="mono">admin-demo</td><td class="mono">admin123</td><td data-i18n="r_ad">Admin — Seed & Users</td></tr>
+  </table>
+</div>
+
+<!-- ================= APP ================= -->
+<div class="app" id="app" style="display:none">
+<div class="side">
+  <div class="brand">PRAGATI SETU<small>SYNTHETIC DEMO</small></div>
+  <div class="rolebadge"><span data-i18n="role_label">Role</span>: <b id="whoami">—</b><br><span class="mut" id="whoamiSub"></span></div>
+
+  <div id="nav-Secretary" style="display:none">
+    <button id="b-cmd" onclick="UI.show('cmd')">📊 <span data-i18n="nav_cmd">Command</span></button>
+    <button id="b-map" onclick="UI.show('map')">🗺 <span data-i18n="nav_map">Portfolio Map</span></button>
+    <button id="b-brief" onclick="UI.show('brief')">📄 <span data-i18n="nav_brief">Brief + DO-Letter</span></button>
+  </div>
+  <div id="nav-Review Officer" style="display:none">
+    <button id="b-tri" onclick="UI.show('tri')">🚦 <span data-i18n="nav_tri">Triage Queue</span></button>
+    <button id="b-ver" onclick="UI.show('ver')">🔍 <span data-i18n="nav_ver">Verify</span></button>
+    <button id="b-esc" onclick="UI.show('esc')">⏰ <span data-i18n="nav_esc">SLA & Escalation</span></button>
+  </div>
+  <div id="nav-Project Officer" style="display:none">
+    <button id="b-upd" onclick="UI.show('upd')">📋 <span data-i18n="nav_upd">My Projects</span></button>
+    <button id="b-ph" onclick="UI.show('ph')">📷 <span data-i18n="nav_ph">Photo & Blocker</span></button>
+  </div>
+  <div id="nav-Admin" style="display:none">
+    <button id="b-users" onclick="UI.show('users')">👥 <span data-i18n="nav_users">Users</span></button>
+    <button id="b-seed" onclick="UI.show('seed')">🌱 <span data-i18n="nav_seed">Seed & Data</span></button>
+  </div>
+
+  <div style="border-top:1px solid #E5E2D9;margin:8px 0;padding-top:8px">
+    <button id="b-proj" onclick="UI.show('proj')">📁 <span data-i18n="nav_proj">Projects</span></button>
+    <button id="b-dep" onclick="UI.show('dep')">🕸 <span data-i18n="nav_dep">Dependencies</span></button>
+    <button id="b-tick" onclick="UI.show('tick')">🎫 <span data-i18n="nav_tick">Interventions</span> <span id="tickCount" class="pill red"></span></button>
+    <button id="b-notif" onclick="UI.show('notif')">🔔 <span data-i18n="nav_notif">Notifications</span> <span id="nCount" class="pill blu"></span></button>
+    <button id="b-audit" onclick="UI.show('audit')">🧾 <span data-i18n="nav_audit">Audit</span></button>
+  </div>
+  <div style="margin-top:6px">
+    <button onclick="UI.lang()" class="btn o" style="width:100%">🌐 EN / हिं</button>
+    <button onclick="API.reset()" class="btn o" style="width:100%">↺ <span data-i18n="btn_reset">Reset demo</span></button>
+    <button onclick="UI.logout()" class="btn o" style="width:100%">⎋ <span data-i18n="btn_logout">Logout</span></button>
+  </div>
+  <div class="foot">Offline • 1 file • RBAC + password auth<br>Flagship: Evidence AI Card → Ticket (14d SLA) → NOC/photo → hash audit</div>
+</div>
+
+<div class="main">
+  <div class="steps" id="flow">
+    <div class="step">1 DATA</div><div class="step">2 DETECTION</div><div class="step">3 DIAGNOSIS</div><div class="step">4 RECOMMEND.</div><div class="step">5 DECISION</div><div class="step">6 ACTION</div><div class="step">7 VERIFY</div>
+  </div>
+
+  <!-- Secretary -->
+  <div id="v-cmd" class="view"><h3 data-i18n="h_cmd">Command — portfolio heat</h3><div id="stats" class="row"></div>
+    <h3 data-i18n="h_triage">Triage — sorted by cost-of-delay</h3><div id="riskList"></div></div>
+
+  <div id="v-map" class="view"><h3 data-i18n="h_map">Portfolio map (skeleton)</h3>
+    <div class="skel" style="height:300px">[ UP outline + 10 pins • size=₹cr • color=health • cluster halos on blocked corridors ]</div>
+    <div id="mapList" class="row" style="margin-top:8px"></div>
+    <div class="mut">Clusters: Bareilly–Moradabad road (P-101 ← P-118 FC) • Kanpur STP+Metro grid (P-310 ← P-203) • Lucknow fiber→metering (P-815 ← P-415).</div></div>
+
+  <div id="v-dep" class="view"><h3 data-i18n="h_dep">Dependency skeleton</h3>
+    <div class="mut" data-i18n="dep_hint">Click any node → AI Card. Red = critical path. Dashed red = blocked edge.</div>
+    <svg id="graph" width="100%" height="440" style="background:#FBFAF7;border:1px solid #E5E2D9;border-radius:12px;margin-top:8px"></svg>
+    <div id="depInfo" class="mut"></div></div>
+
+  <div id="v-brief" class="view"><h3 data-i18n="h_brief">Executive brief + DO-letter</h3>
+    <div style="margin:8px 0" class="noprint">
+      <button class="btn b" onclick="UI.brief()" data-i18n="btn_generate">Generate</button>
+      <button class="btn" onclick="window.print()" data-i18n="btn_print">Print / PDF</button>
+    </div>
+    <div id="briefOut"></div></div>
+
+  <div id="v-audit" class="view"><h3 data-i18n="h_audit">Audit trail (hash-chained)</h3><div id="auditList"></div></div>
+
+  <!-- Review Officer -->
+  <div id="v-tri" class="view"><h3 data-i18n="h_tri">Triage queue — anomalies first</h3><div id="triList"></div>
+    <div class="mut">Anomaly badges: phys-fin gap &gt;15% • no-photo on ≥60% claim • repeated update text (stall pattern) • overdue &gt;30d.</div></div>
+
+  <div id="v-ver" class="view"><h3 data-i18n="h_ver">Verify — confirm ground truth</h3><div id="verList"></div></div>
+
+  <div id="v-esc" class="view"><h3 data-i18n="h_esc">SLA clock & escalation ladder</h3>
+    <div class="card" data-i18n="esc_ladder">Ladder: T-2d reminder → T-0 red alert to owner+RO → +3d escalate to Secretary (DO-letter auto-drafted) → +7d systemic tag (repeat-delay registry).</div>
+    <div class="noprint" style="margin:6px 0"><button class="btn b" onclick="UI.day()">⏩ Advance demo day (now day <span id="dayNum">0</span>)</button></div>
+    <div id="escList"></div></div>
+
+  <!-- Project Officer -->
+  <div id="v-upd" class="view"><h3 data-i18n="h_upd">My projects — 5-minute update</h3><div id="myList"></div></div>
+
+  <div id="v-ph" class="view"><h3 data-i18n="h_ph">Photo & blocker submission</h3>
+    <div class="card">
+      <label class="mut" data-i18n="lbl_proj">Project</label><select id="phProj"></select>
+      <label class="mut" data-i18n="lbl_note">Note</label><input id="phNote" placeholder="e.g. girder casting done, 80 girders">
+      <label class="mut" data-i18n="lbl_photo">Attach geo-tagged photo (mock)</label>
+      <div class="skel" style="height:80px">[ photo picker placeholder — mobile-ready ]</div>
+      <button class="btn g" onclick="UI.photoSubmit(1)" data-i18n="btn_photo">Submit + Photo</button>
+      <button class="btn" onclick="UI.photoSubmit(0)" data-i18n="btn_nophoto">Submit without photo</button>
+      <button class="btn b" onclick="UI.raiseBlocker()" data-i18n="btn_blocker">Raise blocker</button>
+    </div>
+    <div id="phList"></div></div>
+
+  <!-- Admin -->
+  <div id="v-users" class="view"><h3 data-i18n="h_users">Users & access (mock)</h3><table id="userTable"></table></div>
+
+  <div id="v-seed" class="view"><h3 data-i18n="h_seed">Seed & data</h3>
+    <div class="card">
+      <div>10 synthetic projects • mock API with latency • localStorage persistence • demo clock</div>
+      <div style="margin-top:8px">
+        <button class="btn g" onclick="API.reset()">↺ <span data-i18n="seed_reload">Reload 10 cases</span></button>
+        <button class="btn r" onclick="UI.purge()">🗑 <span data-i18n="seed_purge">Purge all demo data</span></button>
+        <button class="btn o" onclick="UI.exportJSON()">⬇ <span data-i18n="seed_export">Export JSON</span></button>
+      </div>
+    </div>
+    <div id="seedStats"></div></div>
+
+  <!-- Shared -->
+  <div id="v-proj" class="view">
+    <div class="row">
+      <div class="col"><input id="q2" placeholder="Search id / name / ministry / blocker…" oninput="UI.projects()"></div>
+      <div class="col"><select id="f2" onchange="UI.projects()"><option value="">All filters</option><option>CRITICAL</option><option>AT RISK</option><option>ON TRACK</option></select></div>
+    </div>
+    <div id="projList" class="row" style="margin-top:8px"></div>
+    <div id="projDetail"></div></div>
+
+  <div id="v-tick" class="view"><h3 data-i18n="h_tick">Intervention queue + SLA timers</h3>
+    <div class="noprint"><button class="btn b" onclick="UI.day()">⏩ Advance demo day</button></div>
+    <div id="tickList"></div></div>
+
+  <div id="v-notif" class="view"><h3 data-i18n="h_notif">Notification centre</h3>
+    <div class="noprint"><button class="btn o" onclick="UI.readAll()" data-i18n="btn_readall">Mark all read</button></div>
+    <div id="notifList"></div></div>
+</div>
+</div>
+
+<div id="modal"><div id="mbox" class="card"></div></div>
+
+<script>
+/* ================= SEED — 10 SYNTHETIC PROJECTS ================= */
+var SEED=[
+{id:"P-101",name:"Bareilly-Moradabad 4-lane (105km)",min:"MoRTH",state:"UP",cost:842,dl:"2026-12-31",phys:62,fin:41,over:29,owner:"EE Sharma",blocker:"Forest clearance",dep:["P-118"],upd:"work in progress",photo:0,ms:[["Land 90%",100],["Girder M7",40],["Paving 40km",55]],burn:[10,12,11,4,3],docs:["DPR.pdf","M7-claim.xlsx","Site-photo-missing"],tl:[["02-Sep","62% claimed, no photo"],["18-Aug","62% same text"],["28-Jul","60% JCB photo"]]},
+{id:"P-118",name:"Forest Clearance Stage-II",min:"MoEF",state:"UP",cost:120,dl:"2026-09-30",phys:30,fin:28,over:45,owner:"RO Env",blocker:"File pending",dep:[],upd:"file pending at RO",photo:0,ms:[["Stage-I",100],["Stage-II NOC",10],["Handover",0]],burn:[2,2,1,1,0],docs:["FC-form-A.pdf"],tl:[["01-Sep","Reminder sent"],["10-Aug","Query raised"]]},
+{id:"P-203",name:"Lucknow Metro Ext 2B (11km)",min:"MoHUA",state:"UP",cost:1240,dl:"2027-03-31",phys:78,fin:74,over:5,owner:"PM Mishra",blocker:"None",dep:[],upd:"girder casting done + photo",photo:1,ms:[["Piers",95],["Girders",80],["Trial run",20]],burn:[20,22,21,22,20],docs:["Pier-log.pdf","Girder-photo-12.jpg"],tl:[["03-Sep","80 girders done"],["20-Aug","Trial prep"]]},
+{id:"P-310",name:"Ganga STP Kanpur 120MLD",min:"Jal Shakti",state:"UP",cost:410,dl:"2026-11-30",phys:55,fin:52,over:12,owner:"AE Gupta",blocker:"Power link",dep:["P-203"],upd:"civil 55% verified",photo:1,ms:[["Civil",60],["Electro-mech",30],["Grid link",10]],burn:[8,8,7,6,6],docs:["Civil-MB.pdf","Grid-req.pdf"],tl:[["02-Sep","55% MB verified"],["15-Aug","Transformer awaited"]]},
+{id:"P-415",name:"Rural Fiber Gonda (800km)",min:"DoT",state:"UP",cost:210,dl:"2026-10-31",phys:88,fin:40,over:0,owner:"DE Verma",blocker:"Billing lag",dep:[],upd:"work in progress",photo:0,ms:[["Laying",90],["Splicing",85],["Billing",35]],burn:[5,6,6,5,2],docs:["OTDR-40.pdf"],tl:[["02-Sep","Laying 90%, bills 35%"],["12-Aug","Same text repeat"]]},
+{id:"P-512",name:"Rail doubling Sitapur-Burhwal",min:"Railways",state:"UP",cost:980,dl:"2027-06-30",phys:48,fin:46,over:18,owner:"Sr DEN",blocker:"Land 4ha",dep:[],upd:"embankment 48%",photo:1,ms:[["Earthwork",55],["Bridges 3/7",42],["Track linking",10]],burn:[12,12,10,9,8],docs:["Land-4ha-note.pdf","Bridge-4-photo.jpg"],tl:[["01-Sep","Bridge-4 piling"],["14-Aug","Land award pending"]]},
+{id:"P-623",name:"AIIMS Gorakhpur OPD block",min:"Health",state:"UP",cost:670,dl:"2026-12-31",phys:70,fin:68,over:8,owner:"EE CPWD",blocker:"Monsoon",dep:[],upd:"slab 6/8 + photo",photo:1,ms:[["Structure",75],["MEP",40],["Finishing",15]],burn:[11,11,10,8,9],docs:["Slab-6-cube.pdf"],tl:[["03-Sep","Slab-6 cast"],["19-Aug","Rain 6 days"]]},
+{id:"P-704",name:"PMGSY roads Bahraich Ph-III",min:"RD",state:"UP",cost:330,dl:"2026-09-30",phys:52,fin:50,over:22,owner:"EE RRDA",blocker:"Contractor slow",dep:[],upd:"work in progress",photo:0,ms:[["WBM",60],["BT 12/30km",40],["Drains",30]],burn:[7,7,5,4,3],docs:["BT-log.pdf"],tl:[["30-Aug","Same 52% 3rd time"],["05-Aug","Notice issued"]]},
+{id:"P-815",name:"Smart metering Lucknow 2L",min:"Power",state:"UP",cost:520,dl:"2027-01-31",phys:64,fin:60,over:9,owner:"SE LESA",blocker:"Supply",dep:["P-415"],upd:"1.2L installed",photo:1,ms:[["Supply 2L",70],["Install 1.2L",60],["MDM link",45]],burn:[9,9,9,8,8],docs:["Supply-inv.pdf","MDM-uptime.png"],tl:[["02-Sep","1.2L live"],["16-Aug","Chip delay"]]},
+{id:"P-920",name:"Amrit Sarovar + desilt 240",min:"RD/WR",state:"UP",cost:180,dl:"2026-10-15",phys:74,fin:72,over:3,owner:"BDO HQ",blocker:"None",dep:[],upd:"182/240 done + geo-tag",photo:1,ms:[["Ponds 182",76],["Desilt",70],["Geo-tag",90]],burn:[4,4,4,4,4],docs:["Geo-tag-182.zip"],tl:[["03-Sep","182 geo-tagged"],["20-Aug","182 verified"]]}
+];
+
+/* ================= USERS — password RBAC (demo) ================= */
+var USERS=[
+{u:"secy-mospi",n:"Secretary, MoSPI",r:"Secretary",pw:"setu123",ok:1},
+{u:"ro-triage",n:"Review Officer (Triage)",r:"Review Officer",pw:"setu123",ok:1},
+{u:"ee-sharma",n:"EE Sharma",r:"Project Officer",pw:"setu123",ok:1},
+{u:"ro-env",n:"RO Env (MoEF)",r:"Project Officer",pw:"setu123",ok:1},
+{u:"admin-demo",n:"Demo Admin",r:"Admin",pw:"admin123",ok:1}
+];
+
+/* ================= i18n ================= */
+var T={
+en:{login_sub:"Action-closure layer on PAIMANA • secure RBAC login • all data SYNTHETIC",login_choose:"Sign in (role-based access)",login_user:"Username",login_pw:"Password",login_btn:"🔐 Sign in",login_err:"Invalid username or password.",login_disabled:"Account disabled — contact Admin.",creds_user:"Username",creds_pw:"Password",creds_role:"Role unlocked",r_sec:"Secretary — Command & Brief",r_ro:"Review Officer — Triage & Verify",r_po:"Project Officer — 5-min Update",r_ad:"Admin — Seed & Users",role_label:"Role",nav_cmd:"Command",nav_map:"Portfolio Map",nav_brief:"Brief + DO-Letter",nav_tri:"Triage Queue",nav_ver:"Verify",nav_esc:"SLA & Escalation",nav_upd:"My Projects",nav_ph:"Photo & Blocker",nav_users:"Users",nav_seed:"Seed & Data",nav_proj:"Projects",nav_dep:"Dependencies",nav_tick:"Interventions",nav_notif:"Notifications",nav_audit:"Audit",h_cmd:"Command — portfolio heat",h_triage:"Triage — sorted by cost-of-delay",h_map:"Portfolio map (skeleton)",h_dep:"Dependency skeleton",h_brief:"Executive brief + DO-letter",h_audit:"Audit trail (hash-chained)",h_tri:"Triage queue — anomalies first",h_ver:"Verify — confirm ground truth",h_esc:"SLA clock & escalation ladder",h_upd:"My projects — 5-minute update",h_ph:"Photo & blocker submission",h_users:"Users & access (mock)",h_seed:"Seed & data",h_tick:"Intervention queue + SLA timers",h_notif:"Notification centre",btn_generate:"Generate",btn_print:"Print / PDF",btn_reset:"Reset demo",btn_logout:"Logout",btn_readall:"Mark all read",seed_reload:"Reload 10 cases",seed_purge:"Purge all demo data",seed_export:"Export JSON",lbl_proj:"Project",lbl_note:"Note",lbl_photo:"Attach geo-tagged photo (mock)",btn_photo:"Submit + Photo",btn_nophoto:"Submit without photo",btn_blocker:"Raise blocker",esc_ladder:"Ladder: T-2d reminder → T-0 red alert to owner+RO → +3d escalate to Secretary (DO-letter auto-drafted) → +7d systemic tag (repeat-delay registry).",dep_hint:"Click any node → AI Card. Red = critical path. Dashed red = blocked edge."},
+hi:{login_sub:"PAIMANA पर एक्शन-क्लोज़र परत • सुरक्षित RBAC लॉगिन • सारा डेटा सिंथेटिक",login_choose:"साइन इन (भूमिका-आधारित पहुँच)",login_user:"उपयोगकर्ता नाम",login_pw:"पासवर्ड",login_btn:"🔐 साइन इन",login_err:"गलत उपयोगकर्ता नाम या पासवर्ड।",login_disabled:"खाता निष्क्रिय — एडमिन से संपर्क करें।",creds_user:"उपयोगकर्ता",creds_pw:"पासवर्ड",creds_role:"भूमिका",r_sec:"सेक्रेटरी — कमांड व ब्रीफ",r_ro:"रिव्यू ऑफिसर — ट्रायाज व सत्यापन",r_po:"प्रोजेक्ट ऑफिसर — 5-मिनट अपडेट",r_ad:"एडमिन — सीड व यूज़र्स",role_label:"भूमिका",nav_cmd:"कमांड",nav_map:"पोर्टफोलियो मैप",nav_brief:"ब्रीफ + डीओ-पत्र",nav_tri:"ट्रायाज कतार",nav_ver:"सत्यापन",nav_esc:"एसएलए व एस्कलेशन",nav_upd:"मेरे प्रोजेक्ट",nav_ph:"फोटो व ब्लॉकर",nav_users:"उपयोगकर्ता",nav_seed:"सीड व डेटा",nav_proj:"प्रोजेक्ट्स",nav_dep:"निर्भरताएँ",nav_tick:"इंटरवेंशन",nav_notif:"सूचनाएँ",nav_audit:"ऑडिट",h_cmd:"कमांड — पोर्टफोलियो हीट",h_triage:"ट्रायाज — विलंब-लागत के अनुसार",h_map:"पोर्टफोलियो मैप (स्केलेटन)",h_dep:"निर्भरता स्केलेटन",h_brief:"कार्यकारी ब्रीफ + डीओ-पत्र",h_audit:"ऑडिट ट्रेल (हैश-चेन)",h_tri:"ट्रायाज कतार — पहले एनोमली",h_ver:"सत्यापन — ज़मीनी सच्चाई",h_esc:"एसएलए घड़ी व एस्कलेशन सीढ़ी",h_upd:"मेरे प्रोजेक्ट — 5-मिनट अपडेट",h_ph:"फोटो व ब्लॉकर सबमिशन",h_users:"उपयोगकर्ता व पहुँच (मॉक)",h_seed:"सीड व डेटा",h_tick:"इंटरवेंशन कतार + एसएलए टाइमर",h_notif:"सूचना केंद्र",btn_generate:"जनरेट करें",btn_print:"प्रिंट / PDF",btn_reset:"डेमो रीसेट",btn_logout:"लॉगआउट",btn_readall:"सभी पढ़ा हुआ करें",seed_reload:"10 केस रीलोड",seed_purge:"सारा डेमो डेटा हटाएँ",seed_export:"JSON एक्सपोर्ट",lbl_proj:"प्रोजेक्ट",lbl_note:"नोट",lbl_photo:"जियो-टैग फोटो जोड़ें (मॉक)",btn_photo:"फोटो सहित भेजें",btn_nophoto:"बिना फोटो भेजें",btn_blocker:"ब्लॉकर दर्ज करें",esc_ladder:"सीढ़ी: T-2d रिमाइंडर → T-0 रेड अलर्ट → +3d सेक्रेटरी को एस्कलेशन (डीओ-पत्र ऑटो-ड्राफ्ट) → +7d सिस्टेमिक टैग।",dep_hint:"किसी नोड पर क्लिक → AI कार्ड। लाल = क्रिटिकल पाथ। डैश लाल = ब्लॉक एज।"}
+};
+function L(k){var lg=(API.db&&API.db.lang)||"en";return (T[lg]&&T[lg][k])||T.en[k]||k}
+
+/* ================= MOCK API ================= */
+function $(id){return document.getElementById(id)}
+var API={db:null,
+load:function(){try{this.db=JSON.parse(localStorage.getItem("setuR5"))||null}catch(e){this.db=null}
+ if(!this.db||this.db.v!==5){this.db={v:5,session:null,lang:"en",day:0,tickets:[],audit:[],notifs:[],hist:{},users:USERS,fail:{},upd:{}};
+  var i;for(i=0;i<SEED.length;i++){var p=JSON.parse(JSON.stringify(SEED[i]));this.db.upd[p.id]=p;this.db.hist[p.id]=[]}
+  this.save()}},
+save:function(){localStorage.setItem("setuR5",JSON.stringify(this.db))},
+reset:function(){localStorage.removeItem("setuR5");this.load();UI.boot();UI.toast("Demo reset — 10 cases reloaded")},
+get:function(id){return this.db.upd[id]},
+all:function(){var a=[],k;for(k in this.db.upd)a.push(this.db.upd[k]);return a}};
+
+/* ================= DOMAIN HELPERS ================= */
+function H(p){var h=100-p.over*1.2-Math.abs(p.phys-p.fin)*0.8-(p.photo?0:9);if(p.upd==="work in progress")h-=7;if(p.flagged)h-=10;return Math.max(4,Math.round(h))}
+function ST(h){return h<45?["CRITICAL","red"]:h<70?["AT RISK","yel"]:["ON TRACK","grn"]}
+function CR(p){return Math.round(p.cost*0.002*p.over/7*10)/10}
+function anomalies(p){var a=[],d=p.phys-p.fin,hist=API.db.hist[p.id]||[],dup=0,i;
+ if(d>15)a.push(["pur","phys-fin gap "+d+"%"]);
+ if(!p.photo&&p.phys>=60)a.push(["pur","no photo on claim"]);
+ for(i=0;i<hist.length;i++)if(hist[i].txt===p.upd)dup++;
+ if(dup>=2)a.push(["pur","repeat text ×"+dup]);
+ if(p.over>30)a.push(["red","overdue "+p.over+"d"]);
+ if(p.flagged)a.push(["red","flagged false reporting"]);
+ return a}
+function who(){return API.db.session?(API.db.session.n+" ("+API.db.session.r+")"):"System"}
+function LOG(act){var al=API.db.audit,prev=al.length?al[al.length-1].hash:"0",s=prev+act+Date.now(),h=0,i;
+ for(i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;
+ al.push({t:new Date().toLocaleTimeString(),d:API.db.day,by:who(),act:act,hash:h.toString(16)});API.save()}
+function notify(txt,who2){API.db.notifs.unshift({txt:txt,who:who2||"all",t:new Date().toLocaleTimeString(),d:API.db.day,unread:true});API.save();UI.badges()}
+function stamp(id,txt,ph){API.db.hist[id].unshift({d:new Date().toLocaleDateString(),txt:txt,photo:ph});API.save()}
+function escState(t){var left=t.sla-API.db.day;if(t.st==="Closed")return["grn","Closed","100"];if(left>2)return["yel","SLA "+left+"d left","35"];if(left>=0)return["red","DUE — red alert","60"];if(left>=-3)return["red","OVERDUE "+(-left)+"d → escalate to Secretary","70"];if(left>=-7)return["pur","SYSTEMIC "+(-left)+"d — repeat-delay registry","85"];return["pur","SYSTEMIC +"+(-left)+"d","90"]}
+
+/* ================= UI ================= */
+var UI={cur:null,VIEWS:["cmd","map","dep","brief","audit","tri","ver","esc","upd","ph","users","seed","proj","tick","notif"],
+toast:function(msg){notify(msg,API.db.session?API.db.session.r:"all");UI.notif()},
+boot:function(){var s=API.db.session;if(!s){$("login").style.display="block";$("app").style.display="none";return}
+ $("login").style.display="none";$("app").style.display="flex";
+ var roles=["Secretary","Review Officer","Project Officer","Admin"],i;
+ for(i=0;i<roles.length;i++)$("nav-"+roles[i]).style.display=roles[i]===s.r?"block":"none";
+ $("whoami").textContent=s.r;$("whoamiSub").textContent=s.n+" • day "+API.db.day;
+ var def={Secretary:"cmd","Review Officer":"tri","Project Officer":"upd",Admin:"users"}[s.r];
+ UI.show(def)},
+loginSubmit:function(){var u=$("liUser").value,p=$("liPw").value,err=$("liErr"),m=null,i;
+ for(i=0;i<API.db.users.length;i++)if(API.db.users[i].u===u){m=API.db.users[i];break}
+ if(m&&m.pw!==p)m=null;
+ if(m&&!m.ok){err.textContent=L("login_disabled");err.style.display="block";LOG("Login blocked — disabled account "+u);return}
+ if(!m){err.textContent=L("login_err");err.style.display="block";API.db.fail[u]=(API.db.fail[u]||0)+1;API.save();
+  if(API.db.fail[u]>=3)LOG("⚠ "+API.db.fail[u]+" failed logins for "+u);return}
+ err.style.display="none";$("liPw").value="";API.db.fail[u]=0;
+ API.db.session={u:m.u,n:m.n,r:m.r};API.save();
+ LOG("Login "+m.u+" as "+m.r);notify("Welcome "+m.n+" — role "+m.r+" unlocked");
+ UI.boot();UI.all()},
+logout:function(){LOG("Logout "+(API.db.session?API.db.session.u:""));API.db.session=null;API.save();UI.boot()},
+loginSearch:function(){var q=$("q0").value.toLowerCase(),s="";API.all().forEach(function(p){if((p.id+p.name+p.min+p.blocker).toLowerCase().indexOf(q)<0)return;var h=H(p),st=ST(h);s+='<div class="card" style="margin-top:6px"><b>'+p.id+'</b> <span class="pill '+st[1]+'">'+st[0]+' '+h+'</span><div>'+p.name+'</div><div class="mut">'+p.min+' | ₹'+p.cost+'cr | '+p.blocker+'</div></div>'});$("loginSearchOut").innerHTML=s||'<div class="mut" style="font-size:11px">No match</div>'},
+lang:function(){API.db.lang=API.db.lang==="en"?"hi":"en";API.save();
+ document.querySelectorAll("[data-i18n]").forEach(function(el){el.textContent=L(el.getAttribute("data-i18n"))});
+ UI.all();if(UI.cur==="brief")UI.brief()},
+show:function(v){UI.cur=v;var i;for(i=0;i<UI.VIEWS.length;i++){var el=$("v-"+UI.VIEWS[i]);if(el)el.className="view"+(UI.VIEWS[i]===v?" on":"")}
+ ["cmd","map","brief","tri","ver","esc","upd","ph","users","seed","proj","dep","tick","notif","audit"].forEach(function(b){var btn=$("b-"+b);if(btn)btn.className=b===v?"on":""});
+ var fl=$("flow").children,map={cmd:1,proj:0,map:0,dep:2,tri:2,ver:6,esc:5,tick:5,upd:6,ph:6,brief:4,audit:6,users:0,seed:0,notif:5};
+ for(i=0;i<fl.length;i++)fl[i].className="step"+(i<(map[v]||0)?" done":"")+(i===(map[v]||0)?" on":"");
+ if(v==="dep")UI.graph();if(v==="tri")UI.tri();if(v==="ver")UI.ver();if(v==="esc")UI.esc();
+ if(v==="upd")UI.my();if(v==="ph")UI.ph();if(v==="users")UI.users();if(v==="seed")UI.seedStats();
+ if(v==="tick")UI.ticks();if(v==="notif")UI.notif();if(v==="map")UI.map();if(v==="audit")UI.audit()},
+all:function(){UI.cmd();UI.projects();UI.badges();var v=UI.cur;if(v)UI.show(v)},
+badges:function(){var o=API.db.tickets.filter(function(t){return t.st!=="Closed"}).length;
+ var nu=API.db.notifs.filter(function(x){return x.unread}).length;
+ $("tickCount").textContent=o||"";$("nCount").textContent=nu||"";$("dayNum").textContent=API.db.day},
+
+/* ---- Secretary ---- */
+cmd:function(){var all=API.all(),crit=0,atr=0,tot=0,open=0,i;
+ all.forEach(function(p){var h=H(p);if(h<45)crit++;else if(h<70)atr++;tot+=CR(p)});
+ open=API.db.tickets.filter(function(t){return t.st!=="Closed"}).length;
+ $("stats").innerHTML='<div class="card col"><div class="mut">Projects</div><div class="big">'+all.length+'</div></div>'
+ +'<div class="card col"><div class="mut">Critical</div><div class="big" style="color:#DC2626">'+crit+'</div></div>'
+ +'<div class="card col"><div class="mut">At-risk</div><div class="big" style="color:#B45309">'+atr+'</div></div>'
+ +'<div class="card col"><div class="mut">Cost-at-risk ₹cr/wk</div><div class="big">'+Math.round(tot*10)/10+'</div></div>'
+ +'<div class="card col"><div class="mut">Open tickets</div><div class="big">'+open+'</div></div>'
+ +'<div class="card col"><div class="mut">Audit events</div><div class="big">'+API.db.audit.length+'</div></div>';
+ all.sort(function(a,b){return CR(b)-CR(a)});
+ var s="";all.forEach(function(p){var h=H(p),st=ST(h),an=anomalies(p),pills="";an.forEach(function(a){pills+='<span class="pill '+a[0]+'">'+a[1]+'</span>'});
+ s+='<div class="card"><b>'+p.id+' — '+p.name+'</b><span class="pill '+st[1]+'">'+st[0]+' '+h+'</span>'+pills
+ +'<div class="mut">'+p.min+' | '+p.state+' | ₹'+p.cost+'cr | Over '+p.over+'d | Phys '+p.phys+'% vs Fin '+p.fin+'% | ₹'+CR(p)+'cr/wk | Blocker: '+p.blocker+'</div>'
+ +'<div style="margin-top:6px"><button class="btn b" onclick="UI.ai(\''+p.id+'\')">Open AI Card</button>'
+ +'<button class="btn" onclick="UI.detail(\''+p.id+'\')">Detail path</button>'
+ +'<button class="btn o" onclick="UI.whatIf(\''+p.id+'\')">What-if</button></div></div>'});
+ $("riskList").innerHTML=s},
+map:function(){var s="";API.all().forEach(function(p){var h=H(p),st=ST(h);
+ s+='<div class="card col"><b>'+p.id+'</b> <span class="pill '+st[1]+'">'+st[0]+' '+h+'</span><div>'+p.name+'</div><div class="mut">pin size ~₹'+p.cost+'cr • '+p.min+'</div></div>'});
+ $("mapList").innerHTML=s},
+graph:function(){var svg=$("graph"),y=24;svg.innerHTML="";var all=API.all();
+ all.forEach(function(p){p._y=y;var x=p.dep.length?30:470,h=H(p);
+ svg.innerHTML+='<g onclick="UI.ai(\''+p.id+'\')" style="cursor:pointer"><rect x="'+x+'" y="'+y+'" width="240" height="50" rx="10" fill="#FFFFFF" stroke="'+(h<45?'#DC2626':h<70?'#B45309':'#16A34A')+'" stroke-width="'+(h<45?3:1.5)+'"/><text x="'+(x+10)+'" y="'+(y+20)+'" fill="#1F2430" font-size="11" font-weight="bold">'+p.id+' H:'+h+'</text><text x="'+(x+10)+'" y="'+(y+35)+'" fill="#6B7280" font-size="10">'+p.name.substring(0,30)+'</text></g>';y+=72});
+ all.forEach(function(a){a.dep.forEach(function(d){var t=API.get(d);if(!t)return;
+ svg.innerHTML+='<path d="M 270 '+(t._y+25)+' C 350 '+(t._y+25)+',380 '+(a._y+25)+',470 '+(a._y+25)+'" stroke="#DC2626" stroke-width="1.5" fill="none" stroke-dasharray="5,3"/>'})});
+ $("depInfo").textContent="Blocked edges: P-118→P-101, P-203→P-310, P-415→P-815. Fix the source to unlock downstream."},
+brief:function(){var all=API.all(),tot=0,i;all.forEach(function(p){tot+=CR(p)});
+ var rows="";all.forEach(function(p){rows+="<tr><td>"+p.id+"</td><td>"+p.name+"</td><td>"+H(p)+"</td><td>"+p.over+"d</td><td>₹"+CR(p)+"</td><td>"+(p.blocker||"—")+"</td></tr>"});
+ var openT=API.db.tickets.filter(function(t){return t.st!=="Closed"});
+ $("briefOut").innerHTML='<div class="card"><h3>MoSPI Flash Note — '+new Date().toDateString()+' (SYNTHETIC)</h3>'
+ +'<div class="mut">10 cases • Cost-at-risk ₹'+Math.round(tot*10)/10+'cr/wk • Priority: P-101 corridor via P-118 clearance</div>'
+ +'<table style="margin-top:8px"><tr><th>ID</th><th>Project</th><th>Health</th><th>Overdue</th><th>₹cr/wk</th><th>Blocker</th></tr>'+rows+'</table>'
+ +'<div style="margin-top:8px">Open tickets '+openT.length+' • Audit events '+API.db.audit.length+' • Rec: clear P-118 Stage-II in 14d → unlocks P-101.</div>'
+ +'<h3 style="margin-top:12px">DO-letter (editable draft)</h3>'
+ +'<textarea id="doLetter" rows="6">Dear Sir,\n\nProject P-101 (Bareilly-Moradabad 4-lane) is delayed 29 days due to pending Forest Clearance (P-118, Stage-II). Cost-of-delay is ₹'+CR(API.get("P-101"))+'cr per week.\n\nKindly accord Stage-II clearance within 14 days and confirm compliance with geo-tagged proof.\n\n— Secretary, MoSPI (SYNTHETIC demo)</textarea>'
+ +'<div class="noprint" style="margin-top:6px"><button class="btn b" onclick="LOG(\'DO-letter issued (demo)\');UI.toast(\'DO-letter logged to audit\')">Issue + log to audit</button></div></div>';
+ LOG("Brief generated")},
+
+/* ---- Review Officer ---- */
+tri:function(){var all=API.all();all.sort(function(a,b){return anomalies(b).length-anomalies(a).length||CR(b)-CR(a)});
+ var s="";all.forEach(function(p){var h=H(p),st=ST(h),an=anomalies(p),pills="";an.forEach(function(a){pills+='<span class="pill '+a[0]+'">'+a[1]+'</span>'});
+ if(!an.length)return;
+ s+='<div class="card"><b>'+p.id+' — '+p.name+'</b><span class="pill '+st[1]+'">'+st[0]+' '+h+'</span>'+pills
+ +'<div class="mut">"'+p.upd+'" • last photo: '+(p.photo?"yes":"NO")+' • ₹'+CR(p)+'cr/wk</div>'
+ +'<div style="margin-top:6px"><button class="btn b" onclick="UI.ai(\''+p.id+'\')">AI Card</button><button class="btn" onclick="UI.detail(\''+p.id+'\')">Detail</button><button class="btn r" onclick="UI.flag(\''+p.id+'\')">Flag false reporting</button></div></div>'});
+ $("triList").innerHTML=s||'<div class="mut">No anomalies — queue clean.</div>'},
+ver:function(){var s="";API.all().forEach(function(p){var h=H(p),st=ST(h),last=(API.db.hist[p.id]&&API.db.hist[p.id][0]);
+ s+='<div class="card"><b>'+p.id+' — '+p.name+'</b><span class="pill '+st[1]+'">'+st[0]+' '+h+'</span>'
+ +'<div class="mut">Latest claim: '+(last?'"'+last.txt+'" photo='+(last.photo?"yes":"no")+" • "+last.d:'"'+p.upd+'" photo='+(p.photo?"yes":"no"))+'</div>'
+ +'<div class="mut">Cross-check: docs '+p.docs.join(", ")+' • milestone bars vs % above</div>'
+ +'<div style="margin-top:6px"><button class="btn g" onclick="UI.verify(\''+p.id+'\',1)">Confirm</button><button class="btn r" onclick="UI.verify(\''+p.id+'\',0)">Flag mismatch</button><button class="btn" onclick="UI.detail(\''+p.id+'\')">Open evidence</button></div></div>'});
+ $("verList").innerHTML=s},
+verify:function(id,ok){var p=API.get(id);
+ if(ok){p.flagged=false;LOG("Verified "+id+" — claim matches evidence");notify("Verified "+id+" by "+who())}
+ else{p.flagged=true;LOG("FLAG "+id+" — false reporting suspected");notify("⚠ "+id+" flagged for false reporting → Secretary")}
+ API.save();UI.all();UI.show("ver")},
+flag:function(id){UI.verify(id,0)},
+esc:function(){var s="";API.db.tickets.forEach(function(t){var e=escState(t);
+ s+='<div class="card"><b>'+t.id+' | '+t.proj+' → '+t.owner+'</b><span class="pill '+e[0]+'">'+e[1]+'</span>'
+ +(t.esc?'<span class="pill pur">⚠ escalated ×'+t.esc+'</span>':"")
+ +'<div class="mut">'+t.act+' • opened day '+t.opened+' • '+(t.proof?("proof: "+t.proof):"no proof yet")+'</div>'
+ +'<div class="bar"><i style="width:'+e[2]+'%;background:'+(t.st==="Closed"?"#16A34A":e[2]>60?"#DC2626":"#D97706")+'"></i></div>'
+ +'<div style="margin-top:6px">'+(t.st!=="Closed"?'<button class="btn r" onclick="UI.escalate(\''+t.id+'\')">Escalate now</button>':"")+'</div></div>'});
+ $("escList").innerHTML=s||'<div class="mut">No tickets yet — approve an AI Card to start the SLA clock.</div>'},
+day:function(){API.db.day++;API.save();
+ var due=API.db.tickets.filter(function(t){var e=escState(t);return t.st!=="Closed"&&(e[1].indexOf("DUE")===0||e[1].indexOf("OVERDUE")===0)});
+ if(due.length)notify("⏰ "+due.length+" ticket(s) past SLA — escalation ladder active","Secretary");
+ UI.all();UI.show(UI.cur)},
+
+/* ---- Project Officer ---- */
+my:function(){var mine=API.all().filter(function(p){return true}),s="";
+ mine.forEach(function(p){var h=H(p),st=ST(h),tk=API.db.tickets.filter(function(t){return t.proj===p.id&&t.st!=="Closed"})[0];
+ s+='<div class="card"><b>'+p.id+' — '+p.name+'</b><span class="pill '+st[1]+'">'+st[0]+' '+h+'</span>'
+ +(tk?'<span class="pill yel">Ticket '+tk.id+' • SLA '+(tk.sla-API.db.day)+'d</span>':"")
+ +'<div class="mut">'+p.min+' | DL '+p.dl+' | blocker: '+p.blocker+'</div>'
+ +'<div style="margin-top:6px"><button class="btn" onclick="UI.detail(\''+p.id+'\')">5-min update</button><button class="btn b" onclick="UI.show(\'ph\')">Photo & blocker</button></div></div>'});
+ $("myList").innerHTML=s},
+ph:function(){var sel=$("phProj");if(sel&&sel.options.length!==API.all().length){sel.innerHTML="";API.all().forEach(function(p){var o=document.createElement("option");o.value=p.id;o.textContent=p.id+" — "+p.name;sel.appendChild(o)})}
+ var s="";API.all().forEach(function(p){var h=H(p),st=ST(h);s+='<div class="card"><b>'+p.id+'</b> <span class="pill '+st[1]+'">'+st[0]+' '+h+'</span><div class="mut">last: "'+p.upd+'" • photo: '+(p.photo?"yes":"NO")+'</div></div>'});
+ $("phList").innerHTML=s},
+photoSubmit:function(ph){var id=$("phProj").value,p=API.get(id),note=$("phNote").value||p.upd;
+ p.upd=note;p.photo=ph?1:0;stamp(id,note,ph);
+ API.db.tickets.forEach(function(t){if(t.proj===id&&t.st!=="Closed"){t.proof=(ph?"geo-photo":"note-only")+" + note @ day "+API.db.day;t.st="Proof submitted"}});
+ LOG("Update "+id+" phys/fin + photo="+(ph?1:0));notify("Proof submitted for "+id+" → Review Officer","Review Officer");
+ API.save();UI.all();UI.show("ph")},
+raiseBlocker:function(){var id=$("phProj").value,p=API.get(id),b=prompt("Describe the blocker (SYNTHETIC demo):",p.blocker);
+ if(b===null)return;p.blocker=b||p.blocker;LOG("Blocker raised "+id+": "+p.blocker);notify("⚠ "+id+" blocker: "+p.blocker,"Secretary");API.save();UI.all();UI.show("ph")},
+
+/* ---- Admin ---- */
+users:function(){var s='<tr><th>User</th><th>Username</th><th>Role</th><th>Failed logins</th><th>Status</th><th>Action</th></tr>';
+ API.db.users.forEach(function(u){s+='<tr><td>'+u.n+'</td><td class="mono">'+u.u+'</td><td>'+u.r+'</td><td>'+(API.db.fail[u.u]||0)+'</td><td>'+(u.ok?'<span class="pill grn">active</span>':'<span class="pill gry">disabled</span>')+'</td><td><button class="btn o" onclick="UI.toggleUser(\''+u.u+'\')">'+(u.ok?"Disable":"Enable")+'</button></td></tr>'});
+ $("userTable").innerHTML=s},
+toggleUser:function(uid){API.db.users.forEach(function(u){if(u.u===uid)u.ok=u.ok?0:1});LOG("User toggled "+uid);API.save();UI.users()},
+seedStats:function(){var bytes=0;try{bytes=localStorage.getItem("setuR5").length}catch(e){}
+ var oc=API.db.tickets.filter(function(t){return t.st==="Closed"}).length;
+ $("seedStats").innerHTML='<div class="row"><div class="card col"><div class="mut">Projects</div><div class="big">'+API.all().length+'</div></div>'
+ +'<div class="card col"><div class="mut">Tickets open/closed</div><div class="big">'+(API.db.tickets.length-oc)+'/'+oc+'</div></div>'
+ +'<div class="card col"><div class="mut">Audit events</div><div class="big">'+API.db.audit.length+'</div></div>'
+ +'<div class="card col"><div class="mut">Storage bytes</div><div class="big">'+bytes+'</div></div>'
+ +'<div class="card col"><div class="mut">Demo day</div><div class="big">'+API.db.day+'</div></div></div>'
+ +'<div class="mut mono">Version v5 • persistence key "setuR5" • RBAC password auth • all data SYNTHETIC</div>'},
+purge:function(){if(!confirm("Purge all demo data (SYNTHETIC)?"))return;localStorage.removeItem("setuR5");API.db=null;API.load();UI.boot()},
+exportJSON:function(){var blob=new Blob([JSON.stringify(API.db,null,1)],{type:"application/json"});
+ var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="pragati-setu-demo.json";a.click();LOG("Exported JSON")},
+
+/* ---- Shared ---- */
+projects:function(){var q=($("q2").value||"").toLowerCase(),f=$("f2").value,s="";
+ API.all().forEach(function(p){if((p.id+p.name+p.min+p.blocker).toLowerCase().indexOf(q)<0)return;var h=H(p),st=ST(h);if(f&&st[0]!==f)return;
+ s+='<div class="card col"><b>'+p.id+'</b> <span class="pill '+st[1]+'">'+st[0]+' '+h+'</span><div style="margin:4px 0">'+p.name+'</div><div class="mut">'+p.min+' | ₹'+p.cost+'cr | '+p.blocker+'</div><div style="margin-top:6px"><button class="btn" onclick="UI.detail(\''+p.id+'\')">Open detail</button></div></div>'});
+ $("projList").innerHTML=s||'<div class="mut">No match</div>'},
+detail:function(id){UI.show("proj");var p=API.get(id),h=H(p),st=ST(h),an=anomalies(p);
+ var spark=p.burn.map(function(v,i){return (i*52+12)+","+(86-v*3)}).join(" ");
+ var plan=p.burn.map(function(v,i){return (i*52+12)+","+(86-(v*1.35)*3)}).join(" ");
+ var ms="";p.ms.forEach(function(m){ms+='<div>'+m[0]+' — '+m[1]+'%<div class="bar"><i style="width:'+m[1]+'%;background:'+(m[1]<40?'#DC2626':m[1]<70?'#D97706':'#16A34A')+'"></i></div></div>'});
+ var g="";p.ms.forEach(function(m,i){var w=Math.max(14,m[1]*0.7);
+  g+='<div class="grow"><div class="glabel">'+m[0]+'</div><div class="gtrack"><div class="gbar planned" style="left:8%;width:'+(m[1]*0.7+16)+'%"></div><div class="gbar" style="left:8%;width:'+w+'%;background:'+(m[1]<40?'#DC2626':m[1]<70?'#D97706':'#16A34A')+'"></div></div></div>'});
+ var docs="";p.docs.forEach(function(d){docs+='<span class="doc">📄 '+d+'</span>'});
+ var tl="";(API.db.hist[id].concat(p.tl.map(function(t){return {d:t[0],txt:t[1],photo:null}}))).slice(0,8).forEach(function(t){tl+='<div><b>'+t.d+'</b> — '+t.txt+(t.photo===false?' <span class="pill pur">no photo</span>':t.photo?' <span class="pill grn">photo ✓</span>':"")+'</div>'});
+ var pills="";an.forEach(function(a){pills+='<span class="pill '+a[0]+'">'+a[1]+'</span>'});
+ var tk=API.db.tickets.filter(function(t){return t.proj===id&&t.st!=="Closed"})[0];
+ $("projDetail").innerHTML='<div class="card"><b>'+p.id+' — '+p.name+'</b><span class="pill '+st[1]+'">'+st[0]+' '+h+'</span>'+pills
+ +(tk?'<span class="pill yel">Ticket '+tk.id+' • '+(tk.st)+' • SLA '+(tk.sla-API.db.day)+'d</span>':"")
+ +'<div class="mut">'+p.min+' | '+p.state+' | DL '+p.dl+' | Owner '+p.owner+' | Dep '+(p.dep.join(", ")||"—")+' | Blocker '+p.blocker+'</div>'
+ +'<div class="row" style="margin-top:8px"><div class="col"><div class="mut">Site / map skeleton</div><div class="skel" style="height:70px">[ site photo placeholder — '+(p.photo?"photo OK":"NO PHOTO → flag")+' ]</div><div class="skel" style="height:70px">[ map placeholder : '+p.state+' ]</div></div>'
+ +'<div class="col"><div class="mut">Milestones + timeline (dashed = planned)</div><div class="gantt">'+g+'</div>'+ms+'</div>'
+ +'<div class="col"><div class="mut">EVM burn — actual vs planned (₹cr/mo)</div><svg width="100%" height="100" style="background:#FBFAF7;border:1px solid #E5E2D9;border-radius:8px"><polyline points="'+plan+'" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="4,3"/><polyline points="'+spark+'" fill="none" stroke="#2563EB" stroke-width="2.5"/></svg>'
+ +'<div class="mut" style="margin-top:6px">Docs</div>'+docs+'</div></div>'
+ +'<div class="mut">Update feed</div><div class="tl">'+tl+'</div>'
+ +'<div class="row" style="margin-top:8px"><div class="col"><label class="mut">Phys %</label><input id="up" type="number" value="'+p.phys+'"></div><div class="col"><label class="mut">Fin %</label><input id="uf" type="number" value="'+p.fin+'"></div><div class="col"><label class="mut">Note</label><input id="ut" value="'+p.upd.replace(/"/g,"&quot;")+'"></div></div>'
+ +'<div style="margin-top:6px"><button class="btn g" onclick="UI.save(\''+p.id+'\',1)">Submit + Photo</button><button class="btn" onclick="UI.save(\''+p.id+'\',0)">Submit No Photo</button><button class="btn b" onclick="UI.ai(\''+p.id+'\')">AI Card → Ticket</button><button class="btn o" onclick="UI.whatIf(\''+p.id+'\')">What-if</button></div></div>'},
+save:function(id,ph){var p=API.get(id);p.phys=+$("up").value;p.fin=+$("uf").value;p.upd=$("ut").value;p.photo=ph?1:0;
+ if(ph&&p.phys>60)p.over=Math.max(0,p.over-7);
+ stamp(id,p.phys+"% / "+p.fin+"% — "+p.upd,ph);
+ API.save();LOG("Update "+id+" "+p.phys+"/"+p.fin+" ph="+ph);notify("Update "+id+" submitted"+(ph?" with photo":" (no photo)"),"Review Officer");
+ UI.all();UI.detail(id)},
+
+/* ---- AI Card / tickets ---- */
+ai:function(id){var p=API.get(id),h=H(p),conf=p.photo?62:84,an=anomalies(p);
+ var ev="Overdue "+p.over+"d • Var "+Math.abs(p.phys-p.fin)+"%"+(an.length?" • "+an.map(function(a){return a[1]}).join(" • "):"")+" • Text '"+p.upd+"' • "+(p.photo?"photo OK":"NO photo")+" • Dep "+(p.dep.join(", ")||"none")+" • Blocker: "+p.blocker;
+ var rec=p.dep.length?("Escalate "+p.dep.join(", ")+" owner — 14d SLA + parallel work"):"Notice to "+p.owner+", verification in 7d";
+ $("mbox").innerHTML='<span class="pill red">Health '+h+' | Conf '+conf+'%</span><h3 style="margin:6px 0">'+p.id+' — '+p.name+'</h3>'
+ +'<div><b>CLAIM:</b> '+(p.over>18?"Stalled — intervention needed":"Watch — momentum falling")+'</div>'
+ +'<div class="mut" style="margin:6px 0"><b>EVIDENCE:</b><br>'+ev+'<br><b>SOURCE:</b> MIS snapshot + '+p.docs[0]+' | <b>TIME:</b> '+new Date().toLocaleString()+'</div>'
+ +'<div class="card" style="background:#F3F1EA"><b>RECOMMENDATION:</b> '+rec+'<br><span class="mut">Owner '+p.owner+' • SLA 14d</span></div>'
+ +'<label class="mut">Assign owner</label><input id="own" value="'+p.owner+'">'
+ +'<label class="mut">Draft DO-letter (editable)</label><textarea id="aiLetter" rows="4">Dear Sir, '+p.id+' '+p.name+' delayed '+p.over+'d due to '+p.blocker+'. Request action in 14 days. Cost-of-delay ₹'+CR(p)+'cr/week. — MoSPI</textarea>'
+ +'<div><button class="btn g" onclick="UI.approve(\''+p.id+'\')">Approve + Assign</button><button class="btn r" onclick="UI.reject(\''+p.id+'\')">Reject</button><button class="btn o" onclick="UI.whatIf(\''+p.id+'\')">What-if</button><button class="btn" onclick="UI.closeM()">Close</button></div>';
+ $("modal").className="on"},
+approve:function(id){var o=$("own").value,t={id:"T-"+(101+API.db.tickets.length),proj:id,owner:o,act:"Intervene: "+API.get(id).blocker,sla:API.db.day+14,opened:API.db.day,st:"Open",proof:"",esc:0,t:new Date().toLocaleString()};
+ API.db.tickets.push(t);LOG("Approved "+id+" → "+o+" (14d SLA)");notify("Ticket "+t.id+" assigned to "+o);
+ UI.closeM();UI.all();UI.show("tick")},
+reject:function(id){LOG("Rejected AI "+id+" — human review");UI.closeM();UI.all()},
+closeM:function(){$("modal").className=""},
+whatIf:function(id){var p=API.get(id);
+ $("mbox").innerHTML='<h3>What-if — extra delay slider</h3><div class="mut">'+p.id+' — '+p.name+'</div>'
+ +'<label class="mut">Extra delay: <b id="wiVal">0</b> days</label><input id="wiSlider" type="range" min="0" max="60" value="0" oninput="UI.wiCalc(\''+id+'\')" style="width:100%">'
+ +'<div id="wiOut" class="card"></div>'
+ +'<div><button class="btn b" onclick="UI.wiAccept(\''+id+'\')">Accept scenario (adds to overdue)</button><button class="btn" onclick="UI.closeM()">Close</button></div>';
+ $("modal").className="on";UI.wiCalc(id)},
+wiCalc:function(id){var p=API.get(id),x=+$("wiSlider").value,over=p.over+x;
+ var h2=Math.max(4,Math.round(100-over*1.2-Math.abs(p.phys-p.fin)*0.8-(p.photo?0:9)-(p.upd==="work in progress"?7:0)-(p.flagged?10:0)));
+ var cr=Math.round(p.cost*0.002*over/7*10)/10,base=CR(p);
+ $("wiVal").textContent=x;
+ $("wiOut").innerHTML='Health now <b>'+H(p)+'</b> → <b style="color:'+(h2<45?"#DC2626":"#B45309")+'">'+h2+'</b><br>Cost-of-delay ₹'+base+'cr/wk → <b>₹'+cr+'cr/wk</b><br>Downstream: '+(p.dep.length?p.dep.join(", "):"none")+' stay blocked '+(x?"+"+x+"d":"")},
+wiAccept:function(id){var p=API.get(id),x=+$("wiSlider").value;p.over+=x;LOG("What-if accepted "+id+" +"+x+"d");UI.closeM();UI.all();UI.detail(id)},
+ticks:function(){var s="";API.db.tickets.forEach(function(t){var p=API.get(t.proj),e=escState(t);
+ s+='<div class="card"><b>'+t.id+' | '+t.proj+' → '+t.owner+'</b><span class="pill '+e[0]+'">'+t.st+' • '+e[1]+'</span>'
+ +(t.esc?'<span class="pill pur">⚠ escalated ×'+t.esc+'</span>':"")
+ +'<div class="mut">'+t.act+'<br>opened day '+t.opened+' • '+t.t+(t.proof?'<br>proof: '+t.proof:"")+'</div>'
+ +'<div class="bar"><i style="width:'+e[2]+'%;background:'+(t.st==="Closed"?"#16A34A":e[2]>60?"#DC2626":"#D97706")+'"></i></div>'
+ +'<div style="margin-top:6px">'
+ +(t.st==="Open"&&["Review Officer","Project Officer"].indexOf(API.db.session.r)>=0?'<button class="btn b" onclick="UI.proof(\''+t.id+'\')">Submit proof (photo/NOC)</button>':"")
+ +(t.st!=="Closed"?'<button class="btn g" onclick="UI.closeT(\''+t.id+'\')">Close with proof</button><button class="btn r" onclick="UI.escalate(\''+t.id+'\')">Escalate</button>':"")
+ +'</div></div>'});
+ $("tickList").innerHTML=s||'<div class="mut">Empty. Command → AI Card → Approve.</div>';UI.badges()},
+proof:function(tid){API.db.tickets.forEach(function(t){if(t.id===tid){t.st="Proof submitted";t.proof="geo-photo + NOC draft @ day "+API.db.day}});
+ LOG("Proof submitted "+tid);notify("Proof submitted on "+tid+" → Secretary");API.save();UI.all();UI.show("tick")},
+closeT:function(tid){API.db.tickets.forEach(function(t){if(t.id===tid){t.st="Closed";var p=API.get(t.proj);if(p)p.over=Math.max(0,p.over-10)}});
+ LOG("Closed "+tid+" with NOC/photo");notify("✅ "+tid+" closed with proof");API.save();UI.all();UI.show("tick")},
+escalate:function(tid){API.db.tickets.forEach(function(t){if(t.id===tid){t.esc=(t.esc||0)+1}});
+ LOG("Escalated "+tid+" to Secretary");notify("⚠ "+tid+" escalated to Secretary — DO-letter ready","Secretary");API.save();UI.all();UI.show(UI.cur==="esc"?"esc":"tick")},
+notif:function(){var s="";API.db.notifs.forEach(function(n){s+='<div class="notif'+(n.unread?" unread":"")+'"><div>'+(n.unread?"🔵 ":"")+n.txt+' <span class="mut">→ '+n.who+'</span></div><div class="t">day '+n.d+' • '+n.t+'</div></div>'});
+ $("notifList").innerHTML=s||'<div class="mut">No notifications yet.</div>';UI.badges()},
+readAll:function(){API.db.notifs.forEach(function(n){n.unread=false});API.save();UI.notif()},
+audit:function(){var s="";for(var i=API.db.audit.length-1;i>=0;i--){var a=API.db.audit[i];s+='<div class="auditrow"><b>'+a.t+'</b><span class="mut">day '+a.d+'</span><span>'+a.by+'</span><span>'+a.act+'</span><span class="h mono">#'+a.hash+'</span></div>'}
+ $("auditList").innerHTML=s||'<div class="mut">Empty</div>'}};
+
+/* ================= INIT ================= */
+API.load();
+document.querySelectorAll("[data-i18n]").forEach(function(el){el.textContent=L(el.getAttribute("data-i18n"))});
+UI.boot();
+if(API.db.session){UI.all();LOG("Session restored")}
+</script>
+</body>
+</html>
