@@ -19,6 +19,16 @@
   <img src="https://img.shields.io/badge/Bilingual-EN%20%2F%20%E0%A4%B9%E0%A4%BF%E0%A4%82-blue?style=flat-square" />
 </p>
 
+<p>
+  <a href="https://github.com/Aryan0047-ak/NEOHAILEX-PRAGATISETU/actions/workflows/ci.yml"><img src="https://github.com/Aryan0047-ak/NEOHAILEX-PRAGATISETU/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://github.com/Aryan0047-ak/NEOHAILEX-PRAGATISETU/actions/workflows/release-deploy.yml"><img src="https://github.com/Aryan0047-ak/NEOHAILEX-PRAGATISETU/actions/workflows/release-deploy.yml/badge.svg" alt="Release + Deploy" /></a>
+  <a href="https://aryan0047-ak.github.io/NEOHAILEX-PRAGATISETU/"><img src="https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-222?style=flat-square&logo=github" alt="Live Demo" /></a>
+  <a href="https://github.com/Aryan0047-ak/NEOHAILEX-PRAGATISETU/releases"><img src="https://img.shields.io/github/v/tag/Aryan0047-ak/NEOHAILEX-PRAGATISETU?filter=demo-v*&label=demo&style=flat-square" alt="Demo version" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT" /></a>
+</p>
+
+> **🚀 Live Demo:** https://aryan0047-ak.github.io/NEOHAILEX-PRAGATISETU/ — every merge to `main` cuts a new `demo-vX.Y.Z` release via CI/CD.
+
 > **⚠️ All data in this repository is 100% SYNTHETIC** — fabricated exclusively for the hackathon demonstration. No real project data, no real government records, no external APIs.
 
 </div>
@@ -398,6 +408,12 @@ The dataset demonstrates **3 cross-project blockage clusters**:
 
 > **Institution:** *(Your College / University Name)*  
 > **Hackathon:** Smart India Hackathon 2026
+
+---
+
+## 🤝 Contributing
+
+PRs welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) — branch off `main` (`feat/*`, `fix/*`, `docs/*`), open a PR (CI must pass), merge to `main` to cut an auto-versioned `demo-vX.Y.Z` release + Pages deploy.
 
 ---
 

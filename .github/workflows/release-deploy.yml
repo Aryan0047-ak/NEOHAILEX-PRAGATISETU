@@ -1,0 +1,86 @@
+name: Release Demo + Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.bump.outputs.version }}
+      tag: ${{ steps.bump.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - id: bump
+        shell: bash
+        run: |
+          set -euo pipefail
+          PKG_VER=$(node -p "require('./package.json').version")
+          echo "package.json version: $PKG_VER"
+          git fetch --tags
+          LAST_TAG=$(git tag --list 'demo-v*' --sort=-v:refname | head -n 1 || true)
+          echo "last tag: ${LAST_TAG:-none}"
+          if [ -z "$LAST_TAG" ]; then
+            BASE="$PKG_VER"
+          else
+            BASE="${LAST_TAG#demo-v}"
+          fi
+          IFS='.' read -r MAJ MIN PAT <<< "$BASE"
+          PAT=${PAT:-0}
+          NEW_VER="$MAJ.$MIN.$((PAT + 1))"
+          TAG="demo-v$NEW_VER"
+          echo "new version: $NEW_VER ($TAG)"
+          echo "version=$NEW_VER" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists, skipping create."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git tag -a "$TAG" -m "Demo $TAG"
+            git push origin "$TAG"
+          fi
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.bump.outputs.tag }}
+          name: Demo ${{ steps.bump.outputs.tag }}
+          generate_release_notes: true
+          prerelease: false
+
+  deploy:
+    needs: release
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deployment
+        uses: actions/deploy-pages@v4
