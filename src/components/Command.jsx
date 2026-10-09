@@ -1,23 +1,23 @@
 import { useStore } from '../lib/useStore.js'
 import { t } from '../lib/i18nToggle.js'
-import { health, status, anomalies, costOfDelay, riskScore } from '../lib/engine.js'
+import { health, status, anomalies, costOfDelay, riskScore, portfolioStats } from '../lib/engine.js'
 import { openAI, openWhatIf, openProj } from '../lib/uiBus.js'
 
 export default function Command() {
   const db = useStore()
   const all = Object.values(db.upd)
-  let crit = 0, atr = 0, tot = 0
-  all.forEach((p) => { const h = health(p); if (h < 45) crit++; else if (h < 70) atr++; tot += costOfDelay(p) })
+  const stats = portfolioStats(all)
   const open = db.tickets.filter((x) => x.st !== 'Closed').length
 
-  const sorted = [...all].sort((a, b) => costOfDelay(b) - costOfDelay(a))
+  const sorted = [...all].sort((a, b) => riskScore(b, db) - riskScore(a, db))
   return (
     <div>
       <div className="klistrip panel">
-        <div className="cell"><div className="cl">Projects</div><div className="cv">{all.length}</div><div className="cs">synthetic portfolio</div></div>
-        <div className="cell"><div className="cl">Critical</div><div className="cv" style={{ color: 'var(--red)' }}>{crit}</div><div className="cs">health &lt; 45</div></div>
-        <div className="cell"><div className="cl">At risk</div><div className="cv" style={{ color: 'var(--amber)' }}>{atr}</div><div className="cs">health 45–69</div></div>
-        <div className="cell"><div className="cl">Cost-at-risk</div><div className="cv">₹{Math.round(tot * 10) / 10}cr</div><div className="cs">per week</div></div>
+        <div className="cell"><div className="cl">Projects</div><div className="cv">{stats.total}</div><div className="cs">synthetic portfolio</div></div>
+        <div className="cell"><div className="cl">Critical</div><div className="cv" style={{ color: 'var(--red)' }}>{stats.critical}</div><div className="cs">health &lt; 45</div></div>
+        <div className="cell"><div className="cl">At risk</div><div className="cv" style={{ color: 'var(--amber)' }}>{stats.atRisk}</div><div className="cs">health 45–69</div></div>
+        <div className="cell"><div className="cl">Avg health</div><div className="cv">{stats.avgHealth}</div><div className="cs">portfolio mean</div></div>
+        <div className="cell"><div className="cl">Cost-at-risk</div><div className="cv">₹{stats.totalDelay}cr</div><div className="cs">per week</div></div>
         <div className="cell"><div className="cl">Open tickets</div><div className="cv">{open}</div><div className="cs">14d SLA each</div></div>
         <div className="cell"><div className="cl">Audit events</div><div className="cv">{db.audit.length}</div><div className="cs good">hash-chained ✓</div></div>
       </div>
