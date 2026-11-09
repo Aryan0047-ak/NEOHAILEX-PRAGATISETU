@@ -1,6 +1,8 @@
 name: CI - Validate Demo
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -15,5 +17,5 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm test -- --reporter=basic
+      - run: npm run test:coverage
       - run: npm run build

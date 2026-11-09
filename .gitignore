@@ -5,3 +5,5 @@ dist
 .freebuff/
 .env
 .env.*
+
+coverage/
